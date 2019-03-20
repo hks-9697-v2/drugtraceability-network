@@ -1,0 +1,88 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Write your model definitions here
+ */
+
+namespace org.nitk.drugtraceability
+
+enum TraderType {
+  o END_CUSTOMER
+  o PRODUCER
+  o DISTRIBUTOR
+}
+
+enum LicenseType {
+  o PRODUCER
+  o DISTRIBUTOR
+}
+
+asset DrugBatch identified by batchno {
+    o String batchno
+    o String description
+    o String drug_name
+    o Integer drug_id
+    o String expiry_date
+    o Double MRP
+    --> Trader owner
+    --> Trader producer
+    --> Trader proposed_owner
+}
+
+asset License identified by licenseno {
+    o String licenseno
+    o Integer[] products_allowed
+    o LicenseType type
+    o String expiry_date
+    --> Trader owner
+}
+
+participant Trader identified by tradeId {
+    o String tradeId
+    o String firstName
+    o String lastName
+    o TraderType access
+    o DrugBatch[] products_owned
+    o DrugBatch[] transactions_initiated
+    o License[] license
+}
+
+transaction TradeInitiate {
+    --> DrugBatch commodity
+    --> Trader newOwner
+}
+
+transaction TradeFinalise{
+    --> DrugBatch commodity
+    --> Trader newOwner
+}
+
+transaction IssueLicense{
+    o String licenseno
+    o Integer[] products_allowed
+    o LicenseType type
+    o String expiry_date
+    -->Trader applicant
+}
+
+transaction AddDrug {
+    o String batchno
+    o String description
+    o String drug_name
+    o Integer drug_id
+    o String expiry_date
+    o Double MRP
+    --> Trader producer
+}

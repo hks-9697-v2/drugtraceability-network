@@ -1,0 +1,117 @@
+/**
+ * Access control rules for mynetwork
+ */
+
+rule TradersCanViewTheirData {
+     description: "Allow all participants read access to their resources"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: READ
+     resource(v): "org.nitk.drugtraceability.*"
+     condition: (v.getIdentifier() == m.getIdentifier())
+     action: ALLOW
+ }
+
+ 
+rule TradersCanUpdateTheirData {
+     description: "Allow all participants all access to their resources"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: ALL
+     resource(v): "org.nitk.drugtraceability.Trader"
+     condition: (v.getIdentifier() == m.getIdentifier())
+     action: ALLOW
+ }
+
+rule TradersCanViewOtherTraders {
+     description: "Allow all participants read access to their resources"
+     participant: "org.nitk.drugtraceability.Trader"
+     operation: ALL
+     resource: "org.nitk.drugtraceability.Trader"
+     action: ALLOW
+ }
+ 
+rule LicenseAccess {
+     description: "Allow all participants all access to their licenses"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: READ
+     resource(v): "org.nitk.drugtraceability.License"
+     condition: (v.owner.getIdentifier() == m.getIdentifier())
+     action: ALLOW
+ }
+
+rule DrugView {
+     description: "Allow all participants all access to their licenses"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: READ
+     resource(v): "org.nitk.drugtraceability.DrugBatch"
+     condition: (v.producer.getIdentifier() == m.getIdentifier()||v.owner.getIdentifier() == m.getIdentifier()||v.proposed_owner.getIdentifier() == m.getIdentifier())
+     action: ALLOW
+}
+
+rule DrugCreate {
+     description: "Allow all participants all access to their licenses"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: CREATE
+     resource(v): "org.nitk.drugtraceability.DrugBatch"
+     condition: (v.owner.getIdentifier() == m.getIdentifier()&&m.access=='PRODUCER'&&m.license.length>0)
+     action: ALLOW
+}
+
+rule AddDrugPerm {
+     description: "Allow all participants all access to their licenses"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: CREATE
+     resource(v): "org.nitk.drugtraceability.AddDrug"
+     condition: (v.producer.getIdentifier() == m.getIdentifier()&&m.access=='PRODUCER'&&m.license.length>0)
+     action: ALLOW
+}
+
+rule DrugEdit {
+     description: "Allow all participants all access to their licenses"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: UPDATE
+     resource(v): "org.nitk.drugtraceability.DrugBatch"
+     condition: (v.proposed_owner.getIdentifier() == m.getIdentifier())
+     action: ALLOW
+}
+
+rule InitiateTransaction {
+     description: "Allow owner of product to start the bidding"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: CREATE
+     resource(v): "org.nitk.drugtraceability.TradeInitiate"
+     condition: (v.commodity.owner.getIdentifier() == m.getIdentifier() && m.access!='END_CUSTOMER')
+     action: ALLOW
+ }
+
+ rule FinaliseTransaction {
+     description: "Allow owner of product to start the bidding"
+     participant(m): "org.nitk.drugtraceability.Trader"
+     operation: CREATE
+     resource(v): "org.nitk.drugtraceability.TradeFinalise"
+     condition: (v.commodity.proposed_owner.getIdentifier() == m.getIdentifier())
+     action: ALLOW
+ }
+
+rule SystemACL {
+  description:  "System ACL to permit all access"
+  participant: "ANY"
+  operation: ALL
+  resource: "org.hyperledger.composer.system.**"
+  action: ALLOW
+}
+
+rule NetworkAdminUser {
+    description: "Grant business network administrators full access to user resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "**"
+    action: ALLOW
+}
+
+rule NetworkAdminSystem {
+    description: "Grant business network administrators full access to system resources"
+    participant: "org.hyperledger.composer.system.NetworkAdmin"
+    operation: ALL
+    resource: "org.hyperledger.composer.system.**"
+    action: ALLOW
+}
