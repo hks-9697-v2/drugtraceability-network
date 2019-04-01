@@ -56,7 +56,7 @@ participant Trader identified by tradeId {
     o TraderType access
     o DrugBatch[] products_owned
     o DrugBatch[] transactions_initiated
-    o License[] license
+    o License license optional
 }
 
 transaction TradeInitiate {

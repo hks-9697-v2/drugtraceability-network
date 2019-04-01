@@ -1,3 +1,5 @@
+rm networkadmin.card
+composer card delete -c  admin@drugtraceability-network
 echo "installing bna......"
 composer network install --card PeerAdmin@hlfv1 --archiveFile ./dist/drugtraceability-network.bna
 echo "starting network ..."

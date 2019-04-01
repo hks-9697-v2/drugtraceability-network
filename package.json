@@ -31,6 +31,11 @@
     "eslint": "latest",
     "nyc": "latest",
     "mkdirp": "latest",
-    "mocha": "latest"
+    "mocha": "latest",
+    "passport-github": "latest"
+  },
+  "dependencies": {
+    "loopback-connector-mongodb": "^3.9.2",
+    "passport-jwt": "^4.0.0"
   }
 }
